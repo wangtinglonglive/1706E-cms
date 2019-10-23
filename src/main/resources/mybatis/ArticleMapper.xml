@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangting.cms.dao.ArticleMapper">
+	<resultMap type="article" id="articleMapper">
+		<id column="id" property="id" />
+		<result column="channel_id" property="channelId"/>
+		<result column="category_id" property="categoryId"/>
+		<result column="user_id" property="userId"/>
+		<association property="user" column="user_id" 
+		   select="com.wangting.cms.dao.UserMapper.findUserById" />
+	    <association property="channel" column="channel_id" 
+		   select="com.wangting.cms.dao.ChannelMapper.findById" />
+		<association property="cat" column="category_id" 
+		   select="com.wangting.cms.dao.CatMapper.findById" />
+	    <association property="tags" column="id" 
+		   select="findTagsByArticleId" />
+		   
+	</resultMap> 
+	
+	<select id="findTagsByArticleId" resultType="java.lang.String">
+		SELECT GROUP_CONCAT(tagname) tags 
+  			FROM cms_article_tag_middle m  JOIN cms_tag  t on m.tid=t.id 
+  			WHERE m.aid= #{value}
+			GROUP BY m.aid
+	</select>
+	
+	
+	<!-- 根据文章的分类和频道获取文章 -->
+	<select id="list" resultMap="articleMapper">
+		SELECT id,title,picture,channel_id,category_id,user_id,
+		        hits,hot,status,created,updated,commentCnt
+		 FROM cms_article
+		 WHERE channel_id=#{chnId}
+		 <if test="catId!=0">
+		 	AND category_id=#{catId}
+		 </if>    
+		 AND status=1   AND deleted=0
+	</select>
+	
+	<select id="listHot"  resultMap="articleMapper">
+		SELECT id,title,picture,channel_id,category_id,user_id,
+		        hits,hot,status,created,updated,commentCnt
+		 FROM cms_article
+		 	WHERE hot>0 AND status=1 
+		 	AND deleted=0
+		 	ORDER BY hot DESC,created DESC
+	</select>
+	
+	<!-- 获取最新文章 -->
+	<select id="listLast"  resultMap="articleMapper">
+		SELECT id,title,picture,channel_id,category_id,user_id,
+		        hits,hot,status,created,updated,commentCnt
+		 FROM cms_article
+		 	WHERE deleted=0 AND status=1 
+		 	ORDER BY created DESC limit #{value}
+	</select>
+	
+	<!-- 获取需要管理的文章 -->
+	<select id="listAdmin" resultMap="articleMapper">
+		SELECT id,title,picture,channel_id,category_id,user_id,
+		        hits,hot,status,created,updated
+		 FROM cms_article 
+		 	WHERE deleted=0
+		 	<if test="status != -1 ">
+		 		AND status=#{status} 	
+		 	</if>
+		 	ORDER BY created DESC 
+	</select>
+	
+	
+	<select id="findById" resultMap="articleMapper">
+		SELECT id,title,picture,content,channel_id,category_id,user_id,
+		        hits,hot,status,created,updated,commentCnt
+		 FROM cms_article
+		 WHERE id=#{value}
+		 AND deleted=0
+	</select>
+	
+	<!-- 根据用户id查找文章 -->
+	<select id="listByUserId" resultMap="articleMapper">
+		SELECT id,title,picture,user_id,channel_id,category_id,
+		        hits,hot,status,created,updated,commentCnt
+		 FROM cms_article
+		 WHERE user_id=#{value}
+		   AND deleted=0 
+	</select>
+	
+	
+	<insert id="add"  useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+		INSERT INTO cms_article(title,content,picture,channel_id,category_id,user_id,hits,hot,status,deleted,created,updated,commentCnt)
+		  values(#{title},#{content},#{picture},#{channelId},#{categoryId},#{userId},0,0,0,0,now(),now(),0)
+	</insert>
+	    
+	<insert id="addTag" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+		INSERT INTO cms_tag(tagname) values(#{tagname})
+	</insert>
+	
+</mapper>
+  
+  
