@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  *  文章的标签
- * @author zhuzg
+ * @author wangting
  *
  */
 public class Tag implements Serializable {
@@ -15,36 +15,41 @@ public class Tag implements Serializable {
 	private static final long serialVersionUID = -5879066127875281505L;
 	
 	Integer id;
-	String tagname;
-	
-	
-	public Tag(String tagname) {
+	String display_name;
+	public Tag(Integer id, String display_name) {
 		super();
-		this.tagname = tagname;
+		this.id = id;
+		this.display_name = display_name;
 	}
 	
+	
+	public Tag(String display_name) {
+		super();
+		this.display_name = display_name;
+	}
+
+
 	public Tag() {
-		
+		super();
 	}
-	
 	public Integer getId() {
 		return id;
 	}
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	public String getTagname() {
-		return tagname;
+	public String getDisplay_name() {
+		return display_name;
 	}
-	public void setTagname(String tagname) {
-		this.tagname = tagname;
+	public void setDisplay_name(String display_name) {
+		this.display_name = display_name;
 	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((display_name == null) ? 0 : display_name.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((tagname == null) ? 0 : tagname.hashCode());
 		return result;
 	}
 	@Override
@@ -56,23 +61,27 @@ public class Tag implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Tag other = (Tag) obj;
+		if (display_name == null) {
+			if (other.display_name != null)
+				return false;
+		} else if (!display_name.equals(other.display_name))
+			return false;
 		if (id == null) {
 			if (other.id != null)
 				return false;
 		} else if (!id.equals(other.id))
 			return false;
-		if (tagname == null) {
-			if (other.tagname != null)
-				return false;
-		} else if (!tagname.equals(other.tagname))
-			return false;
 		return true;
 	}
 	@Override
 	public String toString() {
-		return "Tag [id=" + id + ", tagname=" + tagname + "]";
+		return "Tag [id=" + id + ", display_name=" + display_name + "]";
 	}
 	
+	
+	
+	
+
 	
 
 }

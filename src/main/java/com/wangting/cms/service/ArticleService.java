@@ -1,13 +1,16 @@
 package com.wangting.cms.service;
 
+import java.util.Date;
 import java.util.List;
 
 import com.github.pagehelper.PageInfo;
 import com.wangting.cms.entity.Article;
+import com.wangting.cms.entity.Commnent;
 
 
 public interface ArticleService {
-	
+
+
 	/**
 	 * 
 	 * @param chnId 频道id
@@ -37,13 +40,28 @@ public interface ArticleService {
 	 * @return
 	 */
 	Article findById(Integer articleId);
-
 	/**
-	 * 添加文章
+	 * 发布文章
 	 * @param article
 	 * @return
 	 */
 	int add(Article article);
+
+	/**
+	 *  根据用户id查找文章列表
+	 * @param id 用户id
+	 * @param page
+	 * @return 
+	 */
+	PageInfo<Article> listArticleByUserId(Integer id, Integer page);
+
+	/**
+	 * 删除文章
+	 * @param id  文章id
+	 * @return
+	 */
+	int remove(Integer id);
+
 	/**
 	 *  修改文章
 	 * @param article
@@ -52,26 +70,14 @@ public interface ArticleService {
 	int update(Article article);
 
 	/**
-	 * 删除文章
-	 * @param id  文章id
-	 * @return
-	 */
-	int remove(Integer id);
-	/**
-	 *  根据用户id查找文章列表
-	 * @param id 用户id
-	 * @param page
-	 * @return 
-	 */
-	PageInfo<Article> listArticleByUserId(Integer id, Integer page);
-	/**
 	 * 
 	 * @param page 页码
 	 * @param status 审核的状态
 	 * @return
 	 */
-	PageInfo<Article> getAdminArticles(Integer page,Integer status);
 
+	//管理员文章管理和分页
+	PageInfo<Article> getAdminArticles(Integer page,Integer status);
 	
 /**
  *  审核文章
@@ -89,5 +95,41 @@ public interface ArticleService {
 	 * @return
 	 */
 	int updateHot(Integer articleId, int status);
+
+	/**
+	 * 发表文章评论
+	 * @param id
+	 * @param articleId
+	 * @param content
+	 */
+	void comment(Integer id, Integer articleId, String content);
+	/**
+	 * 
+	 * @param id
+	 * @param articleId
+	 * @param content
+	 * @param date  发布时间
+	 */
+	void comment(Integer id, Integer articleId, String content,Date date);
+	
+	/**
+	 * 评论
+	 * @param articleId
+	 * @param page
+	 * @return
+	 */
+	
+	PageInfo<Commnent> getCommentByArticleId(Integer articleId,Integer page);
+
+	/**
+	 * 增加文章点击次数
+	 * @param id 文章id
+	 * @return
+	 */
+	int addHits(Integer id);
+
+	int addTag(String tag);
+	
+	PageInfo<Commnent> getCommentlist(Integer userId, Integer page);
 
 }

@@ -14,11 +14,34 @@ public class LinkServiceImpl implements LinkService{
 
 	@Autowired
 	private LinkMapper linkMapper;
-
+/**
+ * 获取友情链接
+ */
 	@Override
 	public List<Link> linklist() {
 		// TODO Auto-generated method stub
 		return linkMapper.linklist();
 	}
-	
+/**
+ *添加友情链接
+ */
+	@Override
+	public int addlink(Link link) {
+		// TODO Auto-generated method stub
+		return linkMapper.addlink(link);
+	}
+	//友情链接的删除
+	@Override
+	public int deletelink(Integer id) {
+		// TODO Auto-generated method stub
+		return linkMapper.deletelink(id);
+	}
+
+	/*@Override
+	 * 友情链接修改
+	public int linkupdate(Integer id) {
+		// TODO Auto-generated method stub
+		return linkMapper.linkupdate(id);
+	}
+	*/
 }

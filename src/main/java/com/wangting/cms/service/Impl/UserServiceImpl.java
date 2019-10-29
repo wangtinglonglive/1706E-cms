@@ -1,10 +1,12 @@
 package com.wangting.cms.service.Impl;
 
-import java.util.List;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.wangting.cms.dao.UserMapper;
 import com.wangting.cms.entity.User;
 import com.wangting.cms.service.UserService;
@@ -58,17 +60,32 @@ public class UserServiceImpl implements UserService{
 		//登录失败
 		return null;
 	}
-@Override
-public List<User> list() {
-	// TODO Auto-generated method stub
-	return userMapper.list();
-}
-@Override
-public int update(Integer id) {
-	// TODO Auto-generated method stub
-	return userMapper.update(id);
-}
 	
+	// 查询用户管理 禁用和解封
+		@Override
+		public PageInfo<User> list(Integer page,int locked) {
+			// TODO Auto-generated method stub
+			System.out.println(" ============ page is " + page);
+			PageHelper.startPage(page, 10);
+			return new PageInfo<User>(userMapper.list(locked));
+		}
+		
+		//修改用户管理禁用 和解封
+		@Override
+		public int update(Integer id ,String locked) {
+			// TODO Auto-generated method stub
+			return userMapper.update(id ,locked);
+		}
+		
+		/**
+		 * 添加个人头像
+		 */
+		@Override
+		public int addHead_picture(User user) {
+			// TODO Auto-generated method stub
+			return userMapper.addHead_picture(user);
+		}
+			
 	
 	
 

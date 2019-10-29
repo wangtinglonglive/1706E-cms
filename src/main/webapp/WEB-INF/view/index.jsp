@@ -51,8 +51,14 @@
 							<li data-target="#carousel" data-slide-to="1"></li>
 							<li data-target="#carousel" data-slide-to="2"></li>
 						</ol>
-						<div class="carousel-inner">
-							<div class="carousel-item active">
+						<%-- <c:forEach items="${slide}" var="imgobj" varStatus="imgindex">
+						
+						
+								<div class="item ${imgindex.index==0?"active":""}">
+									<img src="/pic/${imgobj.picture}" alt="  ">
+								</div> --%>
+							<div class="carousel-inner">
+							 <div class="carousel-item active">
 								<img width="200" height="200" class="d-block w-100" src="/resource/pic/396b80588335682f309f8f62f81dd246.gif" alt="First slide">
 							</div>
 							<div class="carousel-item">
@@ -60,8 +66,9 @@
 							</div>
 							<div class="carousel-item">
 								<img width="200" height="200" class="d-block w-100" src="/resource/pic/be048bc4-c092-4dfe-b0c1-d053c36c497b.gif" alt="Third slide">
-							</div>
+							</div> 
 						</div>
+						<%-- </c:forEach> --%>
 						<a class="carousel-control-prev" href="#carousel" role="button"
 							data-slide="prev"> <span class="carousel-control-prev-icon"
 							aria-hidden="true"></span> <span class="sr-only">Previous</span>
@@ -130,7 +137,31 @@
 			     </ol>
 			   </div>
 			
+			
+			   <div class="card">专题文章</div>
+			   <c:forEach items="${specials}" var="special">
+					   	<div class="card">
+					   <div class="card-header">${special.title}</div>
+					      <ol>
+					    <c:forEach items="${special.artilceList}" var="article">
+					      <li class="text-truncate text-center">
+					      	<a href="javascript:myopen(${article.id })">${article.title}</a>
+					      </li>
+					    
+					    
+					    </c:forEach>
+					     </ol>
+					   </div>
+			   </c:forEach>
+			 
+			 <div class="card">投票</div>
+			 <div class="card-header">
+			  <a class="channel" href="/vote/list"  >我的投票</a>
 			</div>
+			   
+			</div>
+			
+			
 		</div>
 	</div>
 
@@ -139,6 +170,7 @@
 	<jsp:include page="/WEB-INF/view/common/footer.jsp" />
 
 	<script type="text/javascript">
+
 	
 	function myopen(id){
 		 //在新窗口打开文章的详情J

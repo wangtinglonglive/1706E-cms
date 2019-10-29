@@ -1,6 +1,11 @@
 package com.wangting.cms.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,11 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.github.pagehelper.PageInfo;
 import com.wangting.cms.comon.ConstClass;
 import com.wangting.cms.entity.Article;
+import com.wangting.cms.entity.Article4Vote;
 import com.wangting.cms.entity.User;
+import com.wangting.cms.service.Article4VoteService;
 import com.wangting.cms.service.ArticleService;
 import com.wangting.cms.service.ChannelService;
 import com.wangting.cms.service.UserService;
@@ -31,9 +39,26 @@ public class UserController {
 	@Autowired
 	UserService userService;
 	
+	@Autowired
+	Article4VoteService avService;
+	
 	
 	@Autowired
 	ArticleService articleService;
+	
+	@GetMapping("push")
+	public String push(HttpServletRequest request) {
+		return "my/vote/add";
+		
+	}
+	
+	@PostMapping("push")
+	@ResponseBody
+	public boolean  push(HttpServletRequest request,Article4Vote av) {
+		return avService.publish(av)>0;
+		
+	}
+	
 	
 	
 	
@@ -63,7 +88,7 @@ public class UserController {
 	public boolean checkExist(String username) {
 		return !userService.checkExist(username);
 	}
-	
+	//注册
 	@PostMapping("register")  // 只接受POst的请求\
 	public String register(HttpServletRequest request,
 			@Validated User user,
@@ -82,12 +107,12 @@ public class UserController {
 
 	}
 	
-	
+	//登录
 	@RequestMapping(value = "login",method=RequestMethod.GET)
 	public String login() {
 		return "user/login";
 	}
-	
+	//退出
 	@RequestMapping("logout")
 	public String logout(HttpServletRequest request) {
 		request.getSession().removeAttribute(ConstClass.SESSION_USER_KEY);
@@ -140,13 +165,6 @@ public class UserController {
 	 * @param request
 	 * @return
 	 */
-/*	@RequestMapping("home")
-	public String home1(HttpServletRequest request,String title) {
-		
-		List<Article> list = articleService.search(title);
-		request.setAttribute("listsearch", list);
-		return "my/";
-	}*/
 	@RequestMapping("home")
 	public String home(HttpServletRequest request) {
 		
@@ -179,7 +197,58 @@ public class UserController {
 		request.setAttribute("pageArticles", pageArticles);
 		return "/my/list";
 	}
+
+	/**
+	 * 跳转到上传页面
+	 */
+	@GetMapping("toAddhead_picture")
+	public String toAddhead_picture() {
+		return "my/addhead_picture";
+	}
+
+	//个人头像
+	@PostMapping("addhead_picture")
+	public String addHead_picture(HttpServletRequest request,MultipartFile file) throws IllegalStateException, IOException {
+		User user = (User)request.getSession().getAttribute("SESSION_USER_KEY");
+		System.out.println("112323423121233");
+		System.out.println("user----------"+user);
+		processFile(file,user);
+		
+		 userService.addHead_picture(user);
+		return "redirect:home";
+		
+	}
 	
+	/**
+	 * 处理接收到的文件
+	 */
+	
+	private void processFile(MultipartFile file,User user) throws IllegalStateException, IOException {
+
+
+		// 原来的文件名称
+		System.out.println("file.isEmpty() :" + file.isEmpty()  );
+		System.out.println("file.name :" + file.getOriginalFilename());
+		
+		if(file.isEmpty()||"".equals(file.getOriginalFilename()) || file.getOriginalFilename().lastIndexOf('.')<0 ) {
+			user.setHead_picture("");
+			return;
+		}
+			
+		String originName = file.getOriginalFilename();
+		String suffixName = originName.substring(originName.lastIndexOf('.'));
+		SimpleDateFormat sdf=  new SimpleDateFormat("yyyyMMdd");
+		String path = "d:/pic/" + sdf.format(new Date());
+		File pathFile = new File(path);
+		if(!pathFile.exists()) {
+			pathFile.mkdir();
+		}
+		String destFileName = 		path + "/" +  UUID.randomUUID().toString() + suffixName;
+		File distFile = new File( destFileName);
+		file.transferTo(distFile);//文件另存到这个目录下边
+		user.setHead_picture(destFileName.substring(7));
+		
+	}
 	
 	
 	

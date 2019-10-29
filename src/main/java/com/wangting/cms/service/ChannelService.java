@@ -13,7 +13,9 @@ public interface ChannelService {
 	 * @return
 	 */
 	List<Channel> getAllChnls();
-
+	
+	
+//搜索
 	List<Article> getSreach(String title);
 
 
